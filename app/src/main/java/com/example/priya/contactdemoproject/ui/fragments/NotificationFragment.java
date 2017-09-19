@@ -1,4 +1,4 @@
-package com.example.priya.contactdemoproject;
+package com.example.priya.contactdemoproject.ui.fragments;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.priya.contactdemoproject.R;
 import com.example.priya.contactdemoproject.adapter.CustomAdapter;
 import com.example.priya.contactdemoproject.pojo.DataModel;
 
@@ -60,8 +61,7 @@ public class NotificationFragment  extends Fragment{
                 contactCursor =getActivity().getContentResolver().query(uri,
                         projection, null, null, null);
                 if (contactCursor != null && contactCursor.moveToFirst()) {
-                    displayName = contactCursor.getString(
-                            contactCursor.getColumnIndex(ContactsContract.Data.DISPLAY_NAME));
+                    displayName = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Data.DISPLAY_NAME));
                 }
             }
             catch(Exception e) {
@@ -98,6 +98,5 @@ public class NotificationFragment  extends Fragment{
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(mAdapter);
     }
-
 }
 
