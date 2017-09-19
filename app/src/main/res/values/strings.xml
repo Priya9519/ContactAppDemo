@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ContactDemoProject</string>
+    <string name="opendrawer">5</string>
+    <string name="closedrawer">5</string>
+</resources>
