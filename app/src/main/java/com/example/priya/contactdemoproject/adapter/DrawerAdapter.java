@@ -1,7 +1,6 @@
 package com.example.priya.contactdemoproject.adapter;
 
-import android.content.Context;
-import android.content.Intent;
+import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,8 +8,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.priya.contactdemoproject.ContactActivity;
+import com.example.priya.contactdemoproject.ContactFragment;
 import com.example.priya.contactdemoproject.R;
+import com.example.priya.contactdemoproject.listeners.ChangeFragmentListener;
 import com.example.priya.contactdemoproject.pojo.DrawerModel;
 
 import java.util.ArrayList;
@@ -22,13 +22,14 @@ import java.util.ArrayList;
 public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.MyViewHolder> {
 
     protected ArrayList<DrawerModel> dataList;
-    private Context context;
+    private Activity context;
+    private ChangeFragmentListener listener;
 
     //parameterised constructor of adapter which take context and arraylist as parameter
-    public DrawerAdapter(ArrayList<DrawerModel> dataList, Context context) {
+    public DrawerAdapter(ArrayList<DrawerModel> dataList, Activity context, ChangeFragmentListener listener) {
         this.dataList = dataList;
         this.context = context;
-
+        this.listener = listener;
     }
 
     @Override
@@ -47,13 +48,11 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.MyViewHold
            @Override
            public void onClick(View v) {
                if(position==3){
-                   Intent intent=new Intent(context, ContactActivity.class);
-                   context.startActivity(intent);
+                   listener.changeFragment(new ContactFragment());
                }
            }
        });
     }
-
     //override method of recyclerview adapter which return size of datalist
     @Override
     public int getItemCount() {

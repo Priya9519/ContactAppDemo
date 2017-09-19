@@ -1,9 +1,11 @@
 package com.example.priya.contactdemoproject.ui.activities;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,11 +18,12 @@ import android.widget.ImageView;
 
 import com.example.priya.contactdemoproject.R;
 import com.example.priya.contactdemoproject.adapter.DrawerAdapter;
+import com.example.priya.contactdemoproject.listeners.ChangeFragmentListener;
 import com.example.priya.contactdemoproject.pojo.DrawerModel;
 
 import java.util.ArrayList;
 
-public class HomeActivity extends AppCompatActivity implements View.OnClickListener{
+public class HomeActivity extends AppCompatActivity implements View.OnClickListener, ChangeFragmentListener{
     private ArrayList<DrawerModel>dataList=new ArrayList<>();
     private DrawerAdapter mAdapter;
     private RecyclerView recyclerView;
@@ -46,11 +49,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         ivDrawer.setOnClickListener(this);
 //        ivDrawer.setTag("menu_icon");
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        HomeFragment fragment = new HomeFragment();
-        fragmentTransaction.add(R.id.content_frame, fragment);
-        fragmentTransaction.commit();
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//        HomeFragment fragment = new HomeFragment();
+//        fragmentTransaction.add(R.id.content_frame, fragment);
+//        fragmentTransaction.commit();
+
+        replaceFragment(new HomeFragment(), true);
 
       /*  ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -101,7 +106,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         return true;
     }*/
     public void setRecyclerView(ArrayList<DrawerModel> dataList) {
-        mAdapter=new DrawerAdapter(dataList,this);
+        mAdapter=new DrawerAdapter(dataList,this, this);
         LinearLayoutManager layoutManager = new  LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(mAdapter);
@@ -130,6 +135,51 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
 
+    }
+
+
+    /**
+     *
+     * @param fragment
+     * @param saveInBackStack
+     */
+    public void replaceFragment (Fragment fragment, boolean saveInBackStack){
+        String backStateName =  fragment.getClass().getName();
+
+        FragmentManager manager = getSupportFragmentManager();
+        boolean fragmentPopped = manager.popBackStackImmediate (backStateName, 0);
+
+        if (!fragmentPopped){ //fragment not in back stack, create it.
+            FragmentTransaction ft = manager.beginTransaction();
+            ft.replace(R.id.content_frame, fragment, backStateName);
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            if (saveInBackStack)
+                ft.addToBackStack(backStateName);
+            ft.commit();
+        }else
+            Log.e("data", "data");
+    }
+
+    @Override
+    public void changeFragment(Fragment fragment) {
+            drawer.closeDrawer(Gravity.LEFT);
+        replaceFragment(fragment, true);
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+
+            if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
+                finish();
+                return;
+            }
+            super.onBackPressed();
+        }
     }
 }
 

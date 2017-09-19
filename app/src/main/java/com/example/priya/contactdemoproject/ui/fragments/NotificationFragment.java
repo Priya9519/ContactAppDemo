@@ -16,7 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.priya.contactdemoproject.R;
-import com.example.priya.contactdemoproject.adapter.CustomAdapter;
+import com.example.priya.contactdemoproject.adapter.NotificationAdapter;
 import com.example.priya.contactdemoproject.pojo.DataModel;
 
 import java.text.SimpleDateFormat;
@@ -31,7 +31,7 @@ import java.util.Locale;
 public class NotificationFragment  extends Fragment{
     private ArrayList<DataModel> dataModels;
     private RecyclerView recyclerView;
-    private CustomAdapter mAdapter;
+    private NotificationAdapter mAdapter;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -93,7 +93,7 @@ public class NotificationFragment  extends Fragment{
     }
 
     public void setRecyclerView(ArrayList<DataModel> dataList) {
-        mAdapter=new CustomAdapter(dataList,getContext());
+        mAdapter=new NotificationAdapter(dataList,getContext());
         LinearLayoutManager layoutManager = new   LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(mAdapter);

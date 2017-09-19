@@ -4,29 +4,34 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.example.priya.contactdemoproject.adapter.ContactAdapter;
 import com.example.priya.contactdemoproject.pojo.ContactList;
 
 import java.util.ArrayList;
 
-public class ContactActivity extends AppCompatActivity {
+public class ContactFragment extends Fragment {
     private ArrayList<ContactList> dataList=new ArrayList<>();
     private ContactAdapter mAdapter;
     private RecyclerView recyclerView;
     private String name,number;
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_contact);
-        recyclerView=(RecyclerView)findViewById(R.id.recyclerView);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view=inflater.inflate(R.layout.activity_contact,container,false);
+        recyclerView=(RecyclerView)view.findViewById(R.id.recyclerView);
         getContactList();
+        return view;
     }
     private void getContactList() {
-        ContentResolver cr =getContentResolver();
+        ContentResolver cr =getActivity().getContentResolver();
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
                 null, null, null, null);
 
@@ -58,8 +63,8 @@ public class ContactActivity extends AppCompatActivity {
         setRecyclerView(dataList);
     }
     public void setRecyclerView(ArrayList<ContactList> dataList) {
-        mAdapter=new ContactAdapter(dataList,this);
-        LinearLayoutManager layoutManager = new  LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+        mAdapter=new ContactAdapter(dataList,getContext());
+        LinearLayoutManager layoutManager = new  LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(mAdapter);
     }
