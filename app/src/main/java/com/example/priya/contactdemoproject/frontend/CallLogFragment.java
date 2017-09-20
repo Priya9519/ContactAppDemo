@@ -46,25 +46,30 @@ public class CallLogFragment extends Fragment {
     }
     private void getCallDetails() {
         StringBuffer sb = new StringBuffer();
-        Cursor managedCursor = getActivity().managedQuery(CallLog.Calls.CONTENT_URI, null, null, null, null);
-        int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER);
-        int name = managedCursor.getColumnIndex(CallLog.Calls.CACHED_NAME);
-        int date = managedCursor.getColumnIndex(CallLog.Calls.DATE);
-        while (managedCursor.moveToNext()) {
-            String phNumber = managedCursor.getString(number);
-            String callerName = managedCursor.getString(name);
-            String callDate = managedCursor.getString(date);
-            Date callDayTime = new Date(Long.valueOf(callDate));
-            SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss a", Locale.getDefault());
-            String DateToStr = format.format(callDayTime);
-            if (callerName == null) {
-                db.addDataModel(new DataModel(phNumber,DateToStr));
-            } else {
-                db.addDataModel(new DataModel(callerName,DateToStr));
+        try {
+            Cursor managedCursor = getActivity().managedQuery(CallLog.Calls.CONTENT_URI, null, null, null, null);
+            int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER);
+            int name = managedCursor.getColumnIndex(CallLog.Calls.CACHED_NAME);
+            int date = managedCursor.getColumnIndex(CallLog.Calls.DATE);
+            while (managedCursor.moveToNext()) {
+                String phNumber = managedCursor.getString(number);
+                String callerName = managedCursor.getString(name);
+                String callDate = managedCursor.getString(date);
+                Date callDayTime = new Date(Long.valueOf(callDate));
+                SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss a", Locale.getDefault());
+                String DateToStr = format.format(callDayTime);
+                if (callerName == null) {
+                    db.addDataModel(new DataModel(phNumber, DateToStr));
+                } else {
+                    db.addDataModel(new DataModel(callerName, DateToStr));
+                }
             }
+            dataModelList = db.getAllData();
+            setRecyclerView(dataModelList);
         }
-        dataModelList = db.getAllData();
-        setRecyclerView(dataModelList);
+        catch (Exception ex){
+            System.out.println(ex);
+        }
     }
     public void setRecyclerView(ArrayList<DataModel> dataList) {
         mAdapter=new CustomAdapter(dataList,getContext());

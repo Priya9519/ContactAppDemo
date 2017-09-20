@@ -35,59 +35,61 @@ public class NotificationFragment  extends Fragment{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.notification_fragment,container,false);
-        ContentResolver contentResolver = getActivity().getContentResolver();
-        Cursor cursor = contentResolver.query( Uri.parse( "content://sms/inbox" ), null, null, null, null);
-        cursor.moveToFirst();
-        initView(view);
-        dataModels=new ArrayList<>();
-        int date=cursor.getColumnIndex(Telephony.Sms.Inbox.DATE);
-        int number=cursor.getColumnIndex(Telephony.Sms.Inbox.ADDRESS);
-        while (cursor.moveToNext()) {
-            String phNumber = cursor.getString(number);
-            String callDate = cursor.getString(date);
-            Date callDayTime = new Date(Long.valueOf(callDate));
-            SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss a", Locale.getDefault());
-            String DateToStr = format.format(callDayTime);
-            final String[] projection = new String[] {ContactsContract.Data.DISPLAY_NAME};
+        View view = inflater.inflate(R.layout.notification_fragment, container, false);
+        try {
+            ContentResolver contentResolver = getActivity().getContentResolver();
+            Cursor cursor = contentResolver.query(Uri.parse("content://sms/inbox"), null, null, null, null);
+            cursor.moveToFirst();
+            initView(view);
+            dataModels = new ArrayList<>();
+            int date = cursor.getColumnIndex(Telephony.Sms.Inbox.DATE);
+            int number = cursor.getColumnIndex(Telephony.Sms.Inbox.ADDRESS);
+            while (cursor.moveToNext()) {
+                String phNumber = cursor.getString(number);
+                String callDate = cursor.getString(date);
+                Date callDayTime = new Date(Long.valueOf(callDate));
+                SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss a", Locale.getDefault());
+                String DateToStr = format.format(callDayTime);
+                final String[] projection = new String[]{ContactsContract.Data.DISPLAY_NAME};
 
-            String displayName = null;
-            Cursor contactCursor = null;
+                String displayName = null;
+                Cursor contactCursor = null;
 
-            try {
-                Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
-                        Uri.encode(phNumber));
+                try {
+                    Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
+                            Uri.encode(phNumber));
 
-                contactCursor =getActivity().getContentResolver().query(uri,
-                        projection, null, null, null);
-                if (contactCursor != null && contactCursor.moveToFirst()) {
-                    displayName = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Data.DISPLAY_NAME));
+                    contactCursor = getActivity().getContentResolver().query(uri,
+                            projection, null, null, null);
+                    if (contactCursor != null && contactCursor.moveToFirst()) {
+                        displayName = contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Data.DISPLAY_NAME));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if (contactCursor != null) {
+                        contactCursor.close();
+                    }
                 }
-            }
-            catch(Exception e) {
-                e.printStackTrace();
-            }
-            finally {
-                if(contactCursor != null) {
-                    contactCursor.close();
+                if (displayName == null) {
+                    dataModels.add(new DataModel(phNumber, DateToStr));
+                } else {
+                    dataModels.add(new DataModel(displayName, DateToStr));
                 }
-            }
-            if(displayName==null){
-                dataModels.add(new DataModel(phNumber,DateToStr));
-            }
-            else{
-                dataModels.add(new DataModel(displayName,DateToStr));
-            }
-            Log.e("Number",phNumber);
-            Log.e("DateTime",DateToStr);
-            Log.e("name",displayName+"");
+                Log.e("Number", phNumber);
+                Log.e("DateTime", DateToStr);
+                Log.e("name", displayName + "");
 
+
+            }
+            setRecyclerView(dataModels);
 
         }
-        setRecyclerView(dataModels);
+        catch (Exception ex) {
+            System.out.println(ex);
+        }
         return view;
     }
-
     private void initView(View view) {
         recyclerView=(RecyclerView)view.findViewById(R.id.recycler_view);
     }
